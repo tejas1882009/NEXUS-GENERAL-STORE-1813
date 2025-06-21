@@ -126,6 +126,13 @@
       text-align: center;
       font-size: 24px;
     }
+
+    .no-results {
+      text-align: center;
+      color: #ccc;
+      font-size: 18px;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
@@ -140,6 +147,7 @@
     </div>
 
     <div class="product-grid" id="productList"></div>
+    <div id="noResults" class="no-results" style="display:none;">No results found.</div>
 
     <h2 class="section-title">My Wishlist</h2>
     <div class="product-grid" id="wishlistContainer"></div>
@@ -159,7 +167,14 @@
 
     function displayProducts(products) {
       const container = document.getElementById("productList");
+      const noResults = document.getElementById("noResults");
       container.innerHTML = "";
+      if (products.length === 0) {
+        noResults.style.display = "block";
+        return;
+      } else {
+        noResults.style.display = "none";
+      }
       products.forEach(product => {
         container.innerHTML += `
           <div class="product-card">
