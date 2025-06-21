@@ -9,3 +9,16 @@
     }
   ]
 }
+
+
+{
+  "products": [
+    {
+      "name": "Mens luxurious black watch",
+      "image": "https://ibb.co/FLM8RSQq",
+      "desc": "Carlington Endurance Series Analog-Digital Sports Watches for Men and Boys with Alarm, Stopwatch, Backlit Display, Dualtime, Silicone Rubber Strap, Water & Shock Resiatant - CT_9105",
+      "price": "₹1299",
+      "link": "https://amzn.in/d/dUbKzpq"
+    }
+  ]
+}
