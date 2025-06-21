@@ -6,110 +6,126 @@
   <style>
     body {
       margin: 0;
+      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
+      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
     }
 
-    header {
-      background-color: #232f3e;
-      color: white;
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.85);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 40px;
+      letter-spacing: 1.5px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .product-card {
+      background-color: #ffffffee;
+      border-radius: 10px;
       padding: 20px;
       text-align: center;
-      font-size: 28px;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
     }
 
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
+    .product-card:hover {
+      transform: translateY(-5px);
     }
 
-    .card {
-      background-color: white;
-      width: 300px;
-      margin: 15px;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-    }
-
-    .card img {
+    .product-card img {
       width: 100%;
-      height: auto;
-      border-radius: 8px;
+      max-height: 180px;
+      object-fit: contain;
+      border-radius: 6px;
+      margin-bottom: 15px;
     }
 
-    .card h3 {
-      font-size: 18px;
+    .product-card h3 {
       margin: 10px 0 5px;
-      color: #111;
+      font-size: 18px;
     }
 
-    .card p {
+    .product-card p {
       font-size: 14px;
-      margin: 5px 0;
-      color: #555;
+      color: #333;
+      min-height: 50px;
     }
 
-    .price {
+    .product-card .price {
       font-weight: bold;
-      color: #b12704;
+      margin: 10px 0;
       font-size: 16px;
     }
 
-    .buy-btn {
+    .product-card a {
       display: inline-block;
       margin-top: 10px;
-      background-color: #ff9900;
-      color: white;
       padding: 10px 16px;
-      border: none;
+      background-color: #6c5ce7;
+      color: white;
       text-decoration: none;
-      border-radius: 6px;
+      border-radius: 5px;
       font-weight: bold;
-      transition: background 0.2s;
     }
 
-    .buy-btn:hover {
-      background-color: #e08800;
+    .product-note {
+      font-size: 13px;
+      margin-top: 8px;
+      color: #444;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 28px;
+      }
     }
   </style>
 </head>
 <body>
-  <header>Nexus General Store</header>
-  <div class="container" id="productList"></div>
+  <div class="overlay">
+    <h1>Welcome to Nexus General Store</h1>
+    <div class="product-grid" id="productList">
+      <!-- Products will be loaded here -->
+    </div>
+  </div>
 
   <script>
     fetch("products.json")
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to load products.");
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
         const container = document.getElementById("productList");
         data.products.forEach(product => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${product.image}" alt="${product.name}" />
-            <h3>${product.name}</h3>
-            <p>${product.desc}</p>
-            <p class="price">${product.price}</p>
-            <a class="buy-btn" href="${product.link}" target="_blank">Buy Now</a>
+          container.innerHTML += `
+            <div class="product-card">
+              <img src="${product.image}" alt="${product.name}">
+              <h3>${product.name}</h3>
+              <p>${product.desc}</p>
+              <div class="price">${product.price}</div>
+              <a href="${product.link}" target="_blank">View</a>
+              <div class="product-note">Click on view to see more product details</div>
+            </div>
           `;
-          container.appendChild(card);
         });
       })
       .catch(error => {
-        document.getElementById("productList").innerHTML =
-          "<p style='color:red;text-align:center;'>Failed to load products.</p>";
-        console.error(error);
+        document.getElementById("productList").innerHTML = "<p style='color:red;'>Failed to load products.</p>";
+        console.error("Error loading products:", error);
       });
   </script>
 </body>
