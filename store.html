@@ -9,7 +9,6 @@
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
       background: url('https://images.unsplash.com/photo-1586201375761-83865001e31b?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
- 
       background-size: cover;
       color: #fff;
     }
@@ -23,8 +22,23 @@
     h1 {
       text-align: center;
       font-size: 36px;
-      margin-bottom: 40px;
-      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+    }
+
+    .top-buttons {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .top-buttons button {
+      background-color: #0984e3;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      margin: 5px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
     }
 
     .product-grid {
@@ -42,12 +56,7 @@
       text-align: center;
       color: #000;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s ease;
       position: relative;
-    }
-
-    .product-card:hover {
-      transform: translateY(-5px);
     }
 
     .product-card img {
@@ -66,13 +75,11 @@
     .product-card p {
       font-size: 14px;
       color: #333;
-      min-height: 50px;
     }
 
     .product-card .price {
       font-weight: bold;
       margin: 10px 0;
-      font-size: 16px;
     }
 
     .product-card a.view-btn {
@@ -83,7 +90,6 @@
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      font-weight: bold;
     }
 
     .wishlist-btn {
@@ -97,11 +103,6 @@
       border-radius: 4px;
       font-size: 12px;
       cursor: pointer;
-      font-weight: bold;
-    }
-
-    .wishlist-btn:hover {
-      background-color: #d63031;
     }
 
     .product-note {
@@ -110,47 +111,88 @@
       color: #444;
     }
 
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 28px;
-      }
+    #wishlistContainer {
+      margin-top: 40px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-top: 60px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="overlay">
-    <h1>Welcome to Nexus General Store</h1>
-    <div class="product-grid" id="productList">
-      <!-- Products will be loaded here -->
+    <h1>Nexus General Store</h1>
+
+    <div class="top-buttons">
+      <button onclick="showWishlist()">💖 View My Wishlist</button>
+      <button onclick="clearWishlist()">🗑️ Clear Wishlist</button>
     </div>
+
+    <div class="product-grid" id="productList"></div>
+
+    <h2 class="section-title">My Wishlist</h2>
+    <div class="product-grid" id="wishlistContainer"></div>
   </div>
 
   <script>
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
     fetch("products.json")
       .then(response => response.json())
       .then(data => {
         const container = document.getElementById("productList");
         data.products.forEach(product => {
-          container.innerHTML += `
-            <div class="product-card">
-              <button class="wishlist-btn" onclick="addToWishlist('${product.name}')">♡ Wishlist</button>
-              <img src="${product.image}" alt="${product.name}">
-              <h3>${product.name}</h3>
-              <p>${product.desc}</p>
-              <div class="price">${product.price}</div>
-              <a class="view-btn" href="${product.link}" target="_blank">View</a>
-              <div class="product-note">Click on view to see more product details</div>
-            </div>
-          `;
+          container.innerHTML += createProductCard(product, true);
         });
-      })
-      .catch(error => {
-        document.getElementById("productList").innerHTML = "<p style='color:red;'>Failed to load products.</p>";
-        console.error("Error loading products:", error);
       });
 
-    function addToWishlist(productName) {
-      alert(`"${productName}" added to wishlist! (Note: Wishlist feature is visual only for now)`);
+    function createProductCard(product, allowWishlist) {
+      return `
+        <div class="product-card">
+          ${allowWishlist ? `<button class="wishlist-btn" onclick='addToWishlist(${JSON.stringify(product)})'>♡ Wishlist</button>` : ""}
+          <img src="${product.image}" alt="${product.name}">
+          <h3>${product.name}</h3>
+          <p>${product.desc}</p>
+          <div class="price">${product.price}</div>
+          <a class="view-btn" href="${product.link}" target="_blank">View</a>
+          <div class="product-note">Click on view to see more product details</div>
+        </div>
+      `;
+    }
+
+    function addToWishlist(product) {
+      if (!wishlist.find(p => p.name === product.name)) {
+        wishlist.push(product);
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+        alert(`"${product.name}" added to wishlist!`);
+      } else {
+        alert("Already in wishlist!");
+      }
+    }
+
+    function showWishlist() {
+      const container = document.getElementById("wishlistContainer");
+      container.innerHTML = "";
+
+      if (wishlist.length === 0) {
+        container.innerHTML = "<p style='color:white;text-align:center;'>Your wishlist is empty.</p>";
+        return;
+      }
+
+      wishlist.forEach(product => {
+        container.innerHTML += createProductCard(product, false);
+      });
+    }
+
+    function clearWishlist() {
+      if (confirm("Are you sure you want to clear your wishlist?")) {
+        wishlist = [];
+        localStorage.removeItem("wishlist");
+        showWishlist();
+      }
     }
   </script>
 </body>
