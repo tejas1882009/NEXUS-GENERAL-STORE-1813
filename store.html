@@ -7,13 +7,16 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: url('https://images.unsplash.com/photo-1581873372796-635b67a5f3c7?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-      background-size: cover;
+      /* Updated background image and properties */
+      background: url('https://images.unsplash.com/photo-1517486804573-0490f2302e21?auto=format&fit=crop&q=80&w=2070') no-repeat center center fixed;
+      background-size: cover; /* Ensures the image covers the entire background */
+      background-attachment: fixed; /* Keeps the image fixed when scrolling */
+      background-position: center center; /* Centers the image */
       color: #fff;
     }
 
     .overlay {
-      background-color: rgba(0, 0, 0, 0.85);
+      background-color: rgba(0, 0, 0, 0.85); /* Slightly darker overlay for better text readability */
       min-height: 100vh;
       padding: 30px 20px;
     }
