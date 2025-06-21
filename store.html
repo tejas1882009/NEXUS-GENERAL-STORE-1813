@@ -8,7 +8,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background: url('https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
     }
@@ -42,6 +42,7 @@
       color: #000;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s ease;
+      position: relative;
     }
 
     .product-card:hover {
@@ -73,7 +74,7 @@
       font-size: 16px;
     }
 
-    .product-card a {
+    .product-card a.view-btn {
       display: inline-block;
       margin-top: 10px;
       padding: 10px 16px;
@@ -84,9 +85,27 @@
       font-weight: bold;
     }
 
+    .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ff7675;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .wishlist-btn:hover {
+      background-color: #d63031;
+    }
+
     .product-note {
       font-size: 13px;
-      margin-top: 8px;
+      margin-top: 10px;
       color: #444;
     }
 
@@ -113,11 +132,12 @@
         data.products.forEach(product => {
           container.innerHTML += `
             <div class="product-card">
+              <button class="wishlist-btn" onclick="addToWishlist('${product.name}')">♡ Wishlist</button>
               <img src="${product.image}" alt="${product.name}">
               <h3>${product.name}</h3>
               <p>${product.desc}</p>
               <div class="price">${product.price}</div>
-              <a href="${product.link}" target="_blank">View</a>
+              <a class="view-btn" href="${product.link}" target="_blank">View</a>
               <div class="product-note">Click on view to see more product details</div>
             </div>
           `;
@@ -127,6 +147,10 @@
         document.getElementById("productList").innerHTML = "<p style='color:red;'>Failed to load products.</p>";
         console.error("Error loading products:", error);
       });
+
+    function addToWishlist(productName) {
+      alert(`"${productName}" added to wishlist! (Note: Wishlist feature is visual only for now)`);
+    }
   </script>
 </body>
 </html>
