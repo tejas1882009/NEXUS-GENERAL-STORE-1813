@@ -1,10 +1,11 @@
 {
   "products": [
     {
-      "name": "Mens luxurious black watch",
-      "image": "https://i.ibb.co/FLM8RSQ/image.jpg",
-      "desc": "Carlington Endurance Series Analog-Digital Sports Watches for Men and Boys with Alarm, Stopwatch, Backlit Display, Dualtime, Silicone Rubber Strap, Water & Shock Resistant - CT_9105",
-      "price": "₹1299",
-      "link": "https://amzn.in/d/dUbKzpq"
+      "name": "Mens Black glasses",
+      "image": "https://i.ibb.co/PHkK2n0/image.jpg",
+      "desc": "HAZON® Premium Rubber Coated Goggles For Men | Polarized Sunglasses | UV Protected Driving, Riding, Stylish, Anti glare Glasses (CP-OlV-55)",
+      "price": "₹449",
+      "link": "https://amzn.in/d/b13Y2Yx"
     }
-    
+  ]
+}
