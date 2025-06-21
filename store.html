@@ -27,8 +27,9 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       display: flex;
-      gap: 20px;
+      flex-direction: column;
       align-items: center;
+      text-align: center;
     }
 
     .product-card img {
@@ -37,7 +38,7 @@
     }
 
     .product-info h3 {
-      margin: 0 0 10px 0;
+      margin: 10px 0 5px;
     }
 
     .product-info p {
@@ -66,7 +67,12 @@
 
   <script>
     fetch("products.json")
-      .then(res => res.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to load products.json");
+        }
+        return response.json();
+      })
       .then(data => {
         const container = document.getElementById("productList");
         container.innerHTML = "";
@@ -84,9 +90,9 @@
           `;
         });
       })
-      .catch(err => {
-        document.getElementById("productList").innerHTML = "<p style='text-align:center;color:red;'>Failed to load products.</p>";
-        console.error("Error loading products:", err);
+      .catch(error => {
+        document.getElementById("productList").innerHTML = "<p style='text-align:center; color:red;'>Failed to load products.</p>";
+        console.error(error);
       });
   </script>
 </body>
