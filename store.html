@@ -7,7 +7,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: url('https://images.unsplash.com/photo-1607083207830-d3da279c6f2d?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background: url('https://images.unsplash.com/photo-1500336624523-d727130c3328?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
     }
@@ -24,8 +24,11 @@
     }
 
     header h1 {
-      font-size: 34px;
+      font-size: 48px;
       margin: 0;
+      color: #00cec9;
+      text-shadow: 2px 2px 8px #000;
+      letter-spacing: 2px;
     }
 
     .top-bar {
@@ -112,6 +115,12 @@
       cursor: pointer;
     }
 
+    .note {
+      font-size: 12px;
+      margin-top: 10px;
+      color: #666;
+    }
+
     .section-title {
       margin: 40px 0 20px;
       text-align: center;
@@ -122,7 +131,7 @@
 <body>
   <div class="overlay">
     <header>
-      <h1>Nexus General Store</h1>
+      <h1><span style="color: #ffeaa7;">NEXUS</span> <span style="color: #00cec9;">GENERAL</span> <span style="color: #fab1a0;">STORE</span></h1>
     </header>
 
     <div class="top-bar">
@@ -160,6 +169,7 @@
             <div class="price">${product.price}</div>
             <a href="${product.link}" class="view-btn" target="_blank">View</a>
             <button class="wishlist-btn" onclick='addToWishlist(${JSON.stringify(product)})'>Add to Wishlist</button>
+            <div class="note">Click on view to see more product details</div>
           </div>
         `;
       });
