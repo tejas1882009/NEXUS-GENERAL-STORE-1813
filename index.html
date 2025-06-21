@@ -17,7 +17,7 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background-image: url('https://images.unsplash.com/photo-1509395062183-67c5ad6faff9?auto=format&fit=crop&w=1400&q=80'); /* Replace with your own image if needed */
+      background-image: url('https://images.unsplash.com/photo-1509395062183-67c5ad6faff9?auto=format&fit=crop&w=1400&q=80');
       background-size: cover;
       background-position: center;
       color: #fff;
@@ -106,6 +106,7 @@
       <input type="text" id="productName" placeholder="Product Name" required>
       <input type="text" id="productImage" placeholder="Image URL" required>
       <input type="text" id="productDesc" placeholder="Description" required>
+      <input type="text" id="productPrice" placeholder="Price (e.g. ₹499)" required>
       <input type="text" id="productLink" placeholder="Affiliate Link" required>
       <button onclick="addProduct()">Add Product</button>
     </div>
@@ -121,14 +122,16 @@
       const container = document.getElementById("productList");
       container.innerHTML = "";
 
-      products.forEach(product => {
+      products.forEach((product, index) => {
         container.innerHTML += `
           <div class="product-card">
             <img src="${product.image}" alt="Product">
             <div>
               <h3>${product.name}</h3>
               <p>${product.desc}</p>
-              <a href="${product.link}" target="_blank">Buy Now</a>
+              <p><strong>Price:</strong> ${product.price}</p>
+              <a href="${product.link}" target="_blank">Buy Now</a><br><br>
+              <button onclick="deleteProduct(${index})" style="background-color: #d63031; color: white; border: none; padding: 8px 12px; margin-top: 10px; cursor: pointer;">Delete</button>
             </div>
           </div>
         `;
@@ -139,23 +142,33 @@
       const name = document.getElementById("productName").value.trim();
       const image = document.getElementById("productImage").value.trim();
       const desc = document.getElementById("productDesc").value.trim();
+      const price = document.getElementById("productPrice").value.trim();
       const link = document.getElementById("productLink").value.trim();
 
-      if (!name || !image || !desc || !link) {
+      if (!name || !image || !desc || !price || !link) {
         alert("All fields are required!");
         return;
       }
 
-      const newProduct = { name, image, desc, link };
+      const newProduct = { name, image, desc, price, link };
       const existingProducts = JSON.parse(localStorage.getItem("products")) || [];
       existingProducts.push(newProduct);
       localStorage.setItem("products", JSON.stringify(existingProducts));
 
+      // Clear fields
       document.getElementById("productName").value = '';
       document.getElementById("productImage").value = '';
       document.getElementById("productDesc").value = '';
+      document.getElementById("productPrice").value = '';
       document.getElementById("productLink").value = '';
 
+      loadProducts();
+    }
+
+    function deleteProduct(index) {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      products.splice(index, 1); // remove 1 item at that index
+      localStorage.setItem("products", JSON.stringify(products));
       loadProducts();
     }
 
