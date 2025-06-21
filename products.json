@@ -1,14 +1,7 @@
-[
-  {
-    "name": "Wireless Earbuds",
-    "image": "https://example.com/earbuds.jpg",
-    "desc": "High-quality wireless earbuds with noise cancellation.",
-    "link": "https://affiliate-link.com/product1"
-  },
-  {
-    "name": "Smart LED Bulb",
-    "image": "https://example.com/bulb.jpg",
-    "desc": "Control your lights via smartphone or voice assistant.",
-    "link": "https://affiliate-link.com/product2"
-  }
-]
+{
+  "name": "Portronics Ruffpad 8.5 LCD Writing Tablet",
+  "image": "https://m.media-amazon.com/images/I/51Uf2xoGf1L._SX679_.jpg",
+  "desc": "8.5-inch reusable LCD writing tablet with stylus, perfect for kids, students, and quick note-taking.",
+  "price": "₹299",
+  "link": "https://amzn.in/d/73MxvLP"
+}
