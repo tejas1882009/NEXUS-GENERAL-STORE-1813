@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Wireless Earbuds",
+    "image": "https://example.com/earbuds.jpg",
+    "desc": "High-quality wireless earbuds with noise cancellation.",
+    "link": "https://affiliate-link.com/product1"
+  },
+  {
+    "name": "Smart LED Bulb",
+    "image": "https://example.com/bulb.jpg",
+    "desc": "Control your lights via smartphone or voice assistant.",
+    "link": "https://affiliate-link.com/product2"
+  }
+]

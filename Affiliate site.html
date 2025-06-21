@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXUS GENERAL STORE</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://images.unsplash.com/photo-1509395062183-67c5ad6faff9?auto=format&fit=crop&w=1400&q=80'); /* Replace with your own image if needed */
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+
+    .admin-form input {
+      display: block;
+      margin-bottom: 15px;
+      padding: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .admin-form button {
+      padding: 10px 20px;
+      font-weight: bold;
+      background-color: #00b894;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .product-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .product-card img {
+      width: 120px;
+      border-radius: 4px;
+    }
+
+    .product-card h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .product-card a {
+      color: #0984e3;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .section-title {
+      margin-top: 50px;
+      font-size: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .product-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .admin-form input {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>NEXUS GENERAL STORE</h1>
+
+    <!-- Admin Section -->
+    <h2 class="section-title">Admin: Add Product</h2>
+    <div class="admin-form">
+      <input type="text" id="productName" placeholder="Product Name" required>
+      <input type="text" id="productImage" placeholder="Image URL" required>
+      <input type="text" id="productDesc" placeholder="Description" required>
+      <input type="text" id="productLink" placeholder="Affiliate Link" required>
+      <button onclick="addProduct()">Add Product</button>
+    </div>
+
+    <!-- Visitor Section -->
+    <h2 class="section-title">Visitors: Browse Products</h2>
+    <div id="productList"></div>
+  </div>
+
+  <script>
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      const container = document.getElementById("productList");
+      container.innerHTML = "";
+
+      products.forEach(product => {
+        container.innerHTML += `
+          <div class="product-card">
+            <img src="${product.image}" alt="Product">
+            <div>
+              <h3>${product.name}</h3>
+              <p>${product.desc}</p>
+              <a href="${product.link}" target="_blank">Buy Now</a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function addProduct() {
+      const name = document.getElementById("productName").value.trim();
+      const image = document.getElementById("productImage").value.trim();
+      const desc = document.getElementById("productDesc").value.trim();
+      const link = document.getElementById("productLink").value.trim();
+
+      if (!name || !image || !desc || !link) {
+        alert("All fields are required!");
+        return;
+      }
+
+      const newProduct = { name, image, desc, link };
+      const existingProducts = JSON.parse(localStorage.getItem("products")) || [];
+      existingProducts.push(newProduct);
+      localStorage.setItem("products", JSON.stringify(existingProducts));
+
+      document.getElementById("productName").value = '';
+      document.getElementById("productImage").value = '';
+      document.getElementById("productDesc").value = '';
+      document.getElementById("productLink").value = '';
+
+      loadProducts();
+    }
+
+    window.onload = loadProducts;
+  </script>
+</body>
+</html>
