@@ -1,29 +1,8 @@
 [
   {
-    "name": "boAt Airdopes 141",
-    "desc": "True Wireless Earbuds with 42H Playtime & ENx Tech",
-    "price": "\u20b91,299",
-    "image": "https://m.media-amazon.com/images/I/51HBom8xz7L._SX679_.jpg",
-    "link": "https://www.amazon.in/dp/B09G9BL5CP",
-    "category": "Audio",
-    "badge": "\ud83d\udd25 Trending"
-  },
-  {
-    "name": "Noise Pulse 2 Max",
-    "desc": "Bluetooth Calling Smart Watch with 1.85'' Display",
-    "price": "\u20b91,199",
-    "image": "https://m.media-amazon.com/images/I/61akt30bJsL._SX679_.jpg",
-    "link": "https://www.amazon.in/dp/B0BYNLMY3C",
-    "category": "Wearables",
-    "badge": "\ud83c\udd95 New"
-  },
-  {
-    "name": "Samsung Galaxy M14 5G",
-    "desc": "6.6\" LCD, 6000mAh Battery, 50MP Camera",
-    "price": "\u20b910,490",
-    "image": "https://m.media-amazon.com/images/I/81ZSn2rk9WL._SX679_.jpg",
-    "link": "https://www.amazon.in/dp/B0BZCSMP6S",
-    "category": "Mobiles",
-    "badge": "\ud83d\udd25 Trending"
+    "name": "Luxury Backpack",
+    "price": 1299,
+    "image": "https://i.imghippo.com/files/gEB3253M.png",
+    "link": "https://amzn.in/d/1eOFqqk"
   }
 ]
