@@ -2,86 +2,260 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus General Store</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-      text-align: center;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
     }
-    .grid {
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.85);
+      min-height: 100vh;
+      padding: 30px 20px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 48px;
+      margin: 0;
+      color: #00cec9;
+      text-shadow: 2px 2px 8px #000;
+      letter-spacing: 2px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .top-bar input {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 250px;
+    }
+
+    .top-bar button {
+      background-color: #00cec9;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .top-bar button:hover {
+      background-color: #009e9e;
+    }
+
+    .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
       max-width: 1200px;
       margin: auto;
     }
-    .card {
-      background: white;
+
+    .product-card {
+      background: #ffffffdd;
+      color: #000;
       padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s;
     }
-    .card img {
-      max-width: 100%;
-      height: 150px;
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-card img {
+      max-height: 120px;
       object-fit: contain;
-      border-radius: 5px;
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 10px;
     }
-    .card h3 {
-      margin: 10px 0 5px;
-      font-size: 18px;
+
+    .product-card h3 {
+      margin: 10px 0 0;
     }
-    .card p {
-      font-size: 14px;
-      color: #555;
+
+    .product-details {
+      display: none;
+      margin-top: 10px;
     }
-    .price {
+
+    .product-card.expanded .product-details {
+      display: block;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .product-card .price {
       font-weight: bold;
       margin: 8px 0;
     }
-    .btn {
+
+    .view-btn, .wishlist-btn {
       display: inline-block;
-      padding: 8px 12px;
-      background: #00cec9;
+      margin: 6px 5px 0;
+      padding: 6px 12px;
+      background-color: #6c5ce7;
       color: white;
-      text-decoration: none;
+      border: none;
       border-radius: 4px;
-      font-weight: bold;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .note {
+      font-size: 12px;
+      margin-top: 6px;
+      color: #666;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #ccc;
+      font-size: 18px;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
-  <h1>Nexus General Store</h1>
-  <div id="productList" class="grid"></div>
+  <div class="overlay">
+    <header>
+      <h1><span style="color: #ffeaa7;">NEXUS</span> <span style="color: #00cec9;">GENERAL</span> <span style="color: #fab1a0;">STORE</span></h1>
+    </header>
+
+    <div class="top-bar">
+      <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+      <button onclick="toggleWishlist()">💖 Wishlist</button>
+    </div>
+
+    <div class="product-grid" id="productList"></div>
+    <div id="noResults" class="no-results" style="display:none;">No results found.</div>
+
+    <div class="product-grid" id="wishlistContainer" style="display:none;"></div>
+  </div>
 
   <script>
-    fetch('products.json')
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById('productList');
-        if (!Array.isArray(data)) data = [];
-        container.innerHTML = '';
+    let allProducts = [];
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    let wishlistVisible = false;
 
-        data.forEach(product => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
+    fetch("products.json")
+      .then(response => response.json())
+      .then(data => {
+        allProducts = data;
+        displayProducts(allProducts);
+      });
+
+    function displayProducts(products) {
+      const container = document.getElementById("productList");
+      const noResults = document.getElementById("noResults");
+      container.innerHTML = "";
+      if (products.length === 0) {
+        noResults.style.display = "block";
+        return;
+      } else {
+        noResults.style.display = "none";
+      }
+      products.forEach((product, index) => {
+        container.innerHTML += `
+          <div class="product-card" onclick="expandCard(this)">
             <img src="${product.image}" alt="${product.name}">
             <h3>${product.name}</h3>
-            <p>${product.desc}</p>
-            <div class="price">${product.price}</div>
-            <a href="${product.link}" class="btn" target="_blank">Buy Now</a>
-          `;
-          container.appendChild(card);
-        });
-      })
-      .catch(err => {
-        document.getElementById('productList').innerHTML = '<p>Failed to load products.</p>';
-        console.error('Error loading products.json:', err);
+            <div class="product-details">
+              <p>${product.desc}</p>
+              <div class="price">${product.price}</div>
+              <a href="${product.link}" class="view-btn" target="_blank">View</a>
+              <button class="wishlist-btn" onclick="event.stopPropagation(); addToWishlist(${index})">Add to Wishlist</button>
+              <div class="note">Click on view to see more product details</div>
+            </div>
+          </div>
+        `;
       });
+    }
+
+    function expandCard(card) {
+      card.classList.toggle("expanded");
+    }
+
+    function addToWishlist(index) {
+      const product = allProducts[index];
+      if (!wishlist.find(p => p.name === product.name)) {
+        wishlist.push(product);
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+        alert(`${product.name} added to wishlist!`);
+      } else {
+        alert("Already in wishlist!");
+      }
+    }
+
+    function toggleWishlist() {
+      const container = document.getElementById("wishlistContainer");
+      wishlistVisible = !wishlistVisible;
+      if (wishlistVisible) {
+        showWishlist();
+        container.style.display = "grid";
+      } else {
+        container.style.display = "none";
+      }
+    }
+
+    function showWishlist() {
+      const container = document.getElementById("wishlistContainer");
+      container.innerHTML = "";
+
+      if (wishlist.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>Your wishlist is empty.</p>";
+        return;
+      }
+
+      wishlist.forEach((product, index) => {
+        container.innerHTML += `
+          <div class="product-card">
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <div class="product-details" style="display:block">
+              <p>${product.desc}</p>
+              <div class="price">${product.price}</div>
+              <a href="${product.link}" class="view-btn" target="_blank">View</a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function searchProducts() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+      displayProducts(filtered);
+    }
   </script>
 </body>
 </html>
