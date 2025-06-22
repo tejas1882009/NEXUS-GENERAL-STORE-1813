@@ -30,7 +30,6 @@
     }
 
     .search-bar {
-      margin-top: 10px;
       width: 100%;
       max-width: 300px;
     }
@@ -115,29 +114,16 @@
       transition: 0.3s;
     }
 
-    .add-cart {
-      background: #007bff;
-      color: #fff;
-    }
-
-    .add-cart:hover {
-      background: #0056b3;
-    }
-
-    .view-store {
-      background: #ffc107;
-      color: #222;
-    }
-
-    .view-store:hover {
-      background: #e0a800;
-    }
+    .add-cart { background: #007bff; color: #fff; }
+    .add-cart:hover { background: #0056b3; }
+    .view-store { background: #ffc107; color: #222; }
+    .view-store:hover { background: #e0a800; }
 
     .cart-drawer {
       position: fixed;
       top: 80px;
       right: -400px;
-      width: 320px;
+      width: 340px;
       background: #fff;
       border-left: 3px solid #007bff;
       box-shadow: -5px 0 25px rgba(0,0,0,0.15);
@@ -150,18 +136,50 @@
 
     #cart-items {
       list-style: none;
-      max-height: 200px;
+      max-height: 300px;
       overflow-y: auto;
       padding-right: 5px;
     }
 
     #cart-items li {
-      border-bottom: 1px solid #eee;
-      padding: 6px 0;
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
       font-size: 0.9rem;
     }
+
+    .cart-img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      margin-right: 10px;
+      border-radius: 5px;
+    }
+
+    .cart-info {
+      flex: 1;
+    }
+
+    .cart-info span { display: block; }
+
+    .cart-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cart-buttons button {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .remove-btn { background: #dc3545; color: #fff; }
+    .buy-btn { background: #28a745; color: #fff; }
 
     .cart-total {
       font-weight: bold;
@@ -178,23 +196,18 @@
     }
 
     @media (max-width: 480px) {
-      .main-title {
-        font-size: 1.6rem;
-      }
-
-      .cart-drawer {
-        width: 90%;
-      }
+      .main-title { font-size: 1.6rem; }
+      .cart-drawer { width: 90%; }
     }
   </style>
 </head>
 <body>
   <header>
     <h1 class="main-title">Nexus General Store</h1>
-    <div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="Search products...">
     </div>
+    <div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
   </header>
 
   <div id="product-grid" class="product-grid"></div>
@@ -211,11 +224,12 @@
     let allProducts = [];
 
     function loadProducts() {
-      fetch('products.json')
+      fetch('/json/products.json')
         .then(res => res.json())
         .then(products => {
           allProducts = products;
           renderProducts(products);
+          updateCart();
         });
     }
 
@@ -237,7 +251,7 @@
               <h2>${p.name}</h2>
               <p class="price">₹${p.price}</p>
               <div class="buttons">
-                <button class="add-cart" onclick="addToCart('${p.name}', ${p.price})">Add to Cart</button>
+                <button class="add-cart" onclick="addToCart('${p.name}', ${p.price}, '${p.image}', '${p.link}')">Add to Cart</button>
                 <a class="view-store" href="${p.link}" target="_blank">View on Store</a>
               </div>
             </div>
@@ -247,13 +261,19 @@
       }
     }
 
-    function addToCart(name, price) {
+    function addToCart(name, price, image, link) {
       const item = cart.find(i => i.name === name);
       if (item) {
         item.qty += 1;
       } else {
-        cart.push({ name, price, qty: 1 });
+        cart.push({ name, price, qty: 1, image, link });
       }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+    }
+
+    function removeFromCart(name) {
+      cart = cart.filter(i => i.name !== name);
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCart();
     }
@@ -269,7 +289,17 @@
         sum += i.price * i.qty;
         qty += i.qty;
         const li = document.createElement('li');
-        li.innerHTML = `${i.name} x${i.qty} <span>₹${i.price * i.qty}</span>`;
+        li.innerHTML = `
+          <img src="${i.image}" class="cart-img">
+          <div class="cart-info">
+            <span>${i.name}</span>
+            <span>x${i.qty} - ₹${i.price * i.qty}</span>
+          </div>
+          <div class="cart-buttons">
+            <button class="remove-btn" onclick="removeFromCart('${i.name}')">Remove</button>
+            <button class="buy-btn" onclick="window.open('${i.link}', '_blank')">Buy</button>
+          </div>
+        `;
         items.appendChild(li);
       });
 
@@ -288,7 +318,6 @@
     });
 
     loadProducts();
-    updateCart();
   </script>
 </body>
 </html>
