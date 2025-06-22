@@ -211,7 +211,7 @@
     let allProducts = [];
 
     function loadProducts() {
-      fetch('/json/products.json')
+      fetch('products.json')
         .then(res => res.json())
         .then(products => {
           allProducts = products;
