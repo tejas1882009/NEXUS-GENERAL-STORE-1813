@@ -17,10 +17,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     header h1 {
       margin: 0;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: #00e6e6;
     }
     #searchInput {
@@ -29,10 +32,15 @@
       border-radius: 20px;
       width: 200px;
     }
+    #cartIcon {
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-left: 1rem;
+    }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
       padding: 2rem;
     }
@@ -45,17 +53,14 @@
       transition: transform 0.3s ease;
       position: relative;
     }
-
     .product-card:hover {
-      transform: scale(1.03);
+      transform: scale(1.02);
     }
-
     .product-card img {
       width: 100%;
-      height: 220px;
+      height: 200px;
       object-fit: cover;
     }
-
     .badge {
       position: absolute;
       top: 10px;
@@ -67,42 +72,34 @@
       border-radius: 12px;
       font-weight: bold;
     }
-
     .urgency {
       background: orange;
-      top: 10px;
       right: 10px;
       left: auto;
     }
-
     .product-info {
       padding: 1rem;
     }
-
     .product-info h3 {
       margin: 0;
       font-size: 1.1rem;
       color: #333;
     }
-
     .highlight {
       font-size: 0.85rem;
       color: #777;
       margin-top: 4px;
     }
-
     .product-price {
       font-weight: bold;
       font-size: 1.1rem;
       margin: 0.8rem 0;
       color: #111;
     }
-
     .product-buttons {
       display: flex;
       gap: 10px;
     }
-
     .product-buttons button {
       flex: 1;
       padding: 0.5rem;
@@ -110,37 +107,69 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
     }
-
     .view-btn {
       background-color: #00b894;
       color: #fff;
     }
-
-    .view-btn:hover {
-      background-color: #019875;
-    }
-
     .cart-btn {
       background-color: #0984e3;
       color: #fff;
     }
 
-    .cart-btn:hover {
-      background-color: #0652dd;
+    /* Cart panel */
+    #cartPanel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      padding: 1rem;
+      z-index: 100;
     }
-
-    #productContainer::after {
-      content: "No results found.";
-      display: none;
-      text-align: center;
-      color: #888;
-      font-size: 1.2rem;
+    #cartPanel.show {
+      transform: translateX(0%);
     }
-
-    #productContainer.empty::after {
-      display: block;
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .cart-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-right: 10px;
+    }
+    .cart-item-info {
+      flex: 1;
+    }
+    .cart-item-info p {
+      margin: 4px 0;
+    }
+    .cart-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .cart-actions button {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .remove-btn {
+      background: #ccc;
+    }
+    .buy-btn {
+      background: #27ae60;
+      color: white;
     }
   </style>
 </head>
@@ -148,14 +177,23 @@
 
 <header>
   <h1>Nexus Store</h1>
-  <input type="text" id="searchInput" placeholder="Search products..." />
+  <div>
+    <input type="text" id="searchInput" placeholder="Search..." />
+    <span id="cartIcon">🛒</span>
+  </div>
 </header>
 
-<div class="product-grid" id="productContainer">
-  <!-- Products will be injected here -->
+<div id="productContainer" class="product-grid"></div>
+
+<!-- Cart Panel -->
+<div id="cartPanel">
+  <h3>Your Cart</h3>
+  <div id="cartItems"></div>
 </div>
 
 <script>
+  let cart = [];
+
   async function loadProducts() {
     const res = await fetch('products.json');
     const products = await res.json();
@@ -172,31 +210,13 @@
   function displayProducts(products) {
     const container = document.getElementById('productContainer');
     container.innerHTML = '';
-    if (products.length === 0) {
-      container.classList.add('empty');
-      return;
-    }
-    container.classList.remove('empty');
 
-    products.forEach(p => {
+    products.forEach((p, index) => {
       const card = document.createElement('div');
       card.className = 'product-card';
 
-      // Badge
-      if (p.badge) {
-        const badge = document.createElement('div');
-        badge.className = 'badge';
-        badge.textContent = p.badge;
-        card.appendChild(badge);
-      }
-
-      // Urgency
-      if (p.urgency) {
-        const urgency = document.createElement('div');
-        urgency.className = 'badge urgency';
-        urgency.textContent = p.urgency;
-        card.appendChild(urgency);
-      }
+      if (p.badge) card.innerHTML += `<div class="badge">${p.badge}</div>`;
+      if (p.urgency) card.innerHTML += `<div class="badge urgency">${p.urgency}</div>`;
 
       card.innerHTML += `
         <img src="${p.image}" alt="${p.name}" />
@@ -205,14 +225,51 @@
           ${p.highlight ? `<div class="highlight">${p.highlight}</div>` : ''}
           <div class="product-price">₹${p.price}</div>
           <div class="product-buttons">
-            <button class="cart-btn">Add to Cart</button>
+            <button class="cart-btn" onclick="addToCart(${index})">Add to Cart</button>
             <button class="view-btn" onclick="window.open('${p.link}', '_blank')">View on Store</button>
           </div>
         </div>
       `;
       container.appendChild(card);
     });
+
+    window.productData = products;
   }
+
+  function addToCart(index) {
+    const product = window.productData[index];
+    cart.push(product);
+    updateCart();
+  }
+
+  function removeFromCart(i) {
+    cart.splice(i, 1);
+    updateCart();
+  }
+
+  function updateCart() {
+    const cartItems = document.getElementById('cartItems');
+    cartItems.innerHTML = '';
+    cart.forEach((item, i) => {
+      cartItems.innerHTML += `
+        <div class="cart-item">
+          <img src="${item.image}" />
+          <div class="cart-item-info">
+            <p><strong>${item.name}</strong></p>
+            <p>₹${item.price}</p>
+            <div class="cart-actions">
+              <button class="remove-btn" onclick="removeFromCart(${i})">Remove</button>
+              <button class="buy-btn" onclick="window.open('${item.link}', '_blank')">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById('cartIcon').addEventListener('click', () => {
+    document.getElementById('cartPanel').classList.toggle('show');
+  });
 
   loadProducts();
 </script>
