@@ -19,11 +19,11 @@
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 100;
     }
     header h1 {
       margin: 0;
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       color: #00e6e6;
     }
     #searchInput {
@@ -33,14 +33,14 @@
       width: 200px;
     }
     #cartIcon {
+      font-size: 1.3rem;
       cursor: pointer;
-      font-size: 1.2rem;
-      margin-left: 1rem;
+      margin-left: 10px;
     }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
       padding: 2rem;
     }
@@ -50,8 +50,8 @@
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       overflow: hidden;
-      transition: transform 0.3s ease;
       position: relative;
+      transition: transform 0.3s ease;
     }
     .product-card:hover {
       transform: scale(1.02);
@@ -60,6 +60,7 @@
       width: 100%;
       height: 200px;
       object-fit: cover;
+      display: block;
     }
     .badge {
       position: absolute;
@@ -74,8 +75,8 @@
     }
     .urgency {
       background: orange;
-      right: 10px;
       left: auto;
+      right: 10px;
     }
     .product-info {
       padding: 1rem;
@@ -129,7 +130,7 @@
       transform: translateX(100%);
       transition: transform 0.3s ease;
       padding: 1rem;
-      z-index: 100;
+      z-index: 1000;
     }
     #cartPanel.show {
       transform: translateX(0%);
@@ -171,6 +172,19 @@
       background: #27ae60;
       color: white;
     }
+
+    /* Responsive for mobile */
+    @media(max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+
+    @media(min-width: 769px) and (max-width: 1024px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
 </head>
 <body>
@@ -210,7 +224,6 @@
   function displayProducts(products) {
     const container = document.getElementById('productContainer');
     container.innerHTML = '';
-
     products.forEach((p, index) => {
       const card = document.createElement('div');
       card.className = 'product-card';
