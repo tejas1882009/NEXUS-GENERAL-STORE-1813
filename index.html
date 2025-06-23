@@ -4,340 +4,218 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nexus Store</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #f4f6f9;
-      color: #333;
-      padding: 30px 20px;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f4f6fa;
     }
-
     header {
+      background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+      padding: 1rem 2rem;
+      color: #fff;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
     }
-
-    .main-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2rem;
-      font-weight: 600;
-      color: #6c5ce7;
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #00e6e6;
     }
-
-    .search-bar {
-      margin-top: 10px;
-      width: 100%;
-      max-width: 300px;
+    #searchInput {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 20px;
+      width: 200px;
     }
-
-    .search-bar input {
-      width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ccc;
-      border-radius: 30px;
-      font-size: 1rem;
-    }
-
-    .cart-icon {
-      background: #007bff;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 30px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-      transition: background 0.3s;
-    }
-
-    .cart-icon:hover { background: #0056b3; }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
     }
 
     .product-card {
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       overflow: hidden;
-      transition: 0.3s ease;
+      transition: transform 0.3s ease;
+      position: relative;
     }
 
     .product-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+      transform: scale(1.03);
     }
 
     .product-card img {
       width: 100%;
-      height: auto;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: crimson;
+      color: white;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .urgency {
+      background: orange;
+      top: 10px;
+      right: 10px;
+      left: auto;
     }
 
     .product-info {
-      padding: 20px;
-      text-align: center;
+      padding: 1rem;
     }
 
-    .product-info h2 {
+    .product-info h3 {
+      margin: 0;
       font-size: 1.1rem;
-      margin-bottom: 8px;
+      color: #333;
     }
 
-    .price {
-      color: #28a745;
+    .highlight {
+      font-size: 0.85rem;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    .product-price {
+      font-weight: bold;
       font-size: 1.1rem;
-      margin-bottom: 12px;
+      margin: 0.8rem 0;
+      color: #111;
     }
 
-    .buttons {
+    .product-buttons {
       display: flex;
       gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
     }
 
-    .buttons button, .buttons a {
-      padding: 10px 16px;
-      font-size: 0.95rem;
+    .product-buttons button {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 0.9rem;
       border: none;
-      border-radius: 25px;
+      border-radius: 8px;
       cursor: pointer;
-      text-decoration: none;
-      font-weight: 500;
-      transition: 0.3s;
+      transition: background 0.3s;
     }
 
-    .add-cart {
-      background: #007bff;
+    .view-btn {
+      background-color: #00b894;
       color: #fff;
     }
 
-    .add-cart:hover {
-      background: #0056b3;
+    .view-btn:hover {
+      background-color: #019875;
     }
 
-    .view-store {
-      background: #ffc107;
-      color: #222;
+    .cart-btn {
+      background-color: #0984e3;
+      color: #fff;
     }
 
-    .view-store:hover {
-      background: #e0a800;
+    .cart-btn:hover {
+      background-color: #0652dd;
     }
 
-    .cart-drawer {
-      position: fixed;
-      top: 80px;
-      right: -400px;
-      width: 320px;
-      background: #fff;
-      border-left: 3px solid #007bff;
-      box-shadow: -5px 0 25px rgba(0,0,0,0.15);
-      padding: 20px;
-      transition: right 0.4s ease;
-      z-index: 10;
-    }
-
-    .cart-drawer.open { right: 0; }
-
-    #cart-items {
-      list-style: none;
-      max-height: 300px;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    #cart-items li {
-      border-bottom: 1px solid #eee;
-      padding: 6px 0;
-      display: flex;
-      align-items: center;
-      font-size: 0.9rem;
-      gap: 10px;
-    }
-
-    #cart-items img {
-      width: 40px;
-      height: auto;
-      border-radius: 5px;
-    }
-
-    .cart-item-content {
-      flex: 1;
-    }
-
-    .cart-total {
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: #007bff;
-      margin-top: 10px;
-    }
-
-    .remove-btn, .buy-btn {
-      background: #ff6b6b;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-
-    .buy-btn {
-      background: #28a745;
-      margin-left: 5px;
-    }
-
-    .no-results {
+    #productContainer::after {
+      content: "No results found.";
+      display: none;
       text-align: center;
-      font-size: 1.1rem;
-      color: #999;
-      margin-top: 40px;
+      color: #888;
+      font-size: 1.2rem;
     }
 
-    @media (max-width: 768px) {
-      .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .product-grid {
-        grid-template-columns: repeat(1, 1fr);
-      }
-
-      .main-title {
-        font-size: 1.6rem;
-      }
-
-      .cart-drawer {
-        width: 90%;
-      }
+    #productContainer.empty::after {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1 class="main-title">Nexus Store</h1>
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search products...">
-    </div>
-    <div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
-  </header>
 
-  <div id="product-grid" class="product-grid"></div>
-  <div id="no-results" class="no-results" style="display: none;">No results found.</div>
+<header>
+  <h1>Nexus Store</h1>
+  <input type="text" id="searchInput" placeholder="Search products..." />
+</header>
 
-  <div class="cart-drawer" id="cart-drawer">
-    <h2>Your Cart</h2>
-    <ul id="cart-items"></ul>
-    <p class="cart-total">Total: ₹<span id="cart-total">0</span></p>
-  </div>
+<div class="product-grid" id="productContainer">
+  <!-- Products will be injected here -->
+</div>
 
-  <script>
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let allProducts = [];
+<script>
+  async function loadProducts() {
+    const res = await fetch('products.json');
+    const products = await res.json();
+    displayProducts(products);
 
-    function loadProducts() {
-      fetch('products.json')
-        .then(res => res.json())
-        .then(products => {
-          allProducts = products;
-          renderProducts(products);
-        });
-    }
-
-    function renderProducts(products) {
-      const grid = document.getElementById('product-grid');
-      const noResults = document.getElementById('no-results');
-      grid.innerHTML = '';
-
-      if (products.length === 0) {
-        noResults.style.display = 'block';
-      } else {
-        noResults.style.display = 'none';
-        products.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'product-card';
-          card.innerHTML = `
-            <img src="${p.image}" alt="${p.name}">
-            <div class="product-info">
-              <h2>${p.name}</h2>
-              <p class="price">₹${p.price}</p>
-              <div class="buttons">
-                <button class="add-cart" onclick="addToCart('${p.name}', ${p.price}, '${p.image}', '${p.link}')">Add to Cart</button>
-                <a class="view-store" href="${p.link}" target="_blank">View on Store</a>
-              </div>
-            </div>`;
-          grid.appendChild(card);
-        });
-      }
-    }
-
-    function addToCart(name, price, image, link) {
-      const item = cart.find(i => i.name === name);
-      if (item) {
-        item.qty += 1;
-      } else {
-        cart.push({ name, price, qty: 1, image, link });
-      }
-      localStorage.setItem("cart", JSON.stringify(cart));
-      updateCart();
-    }
-
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      updateCart();
-    }
-
-    function updateCart() {
-      const items = document.getElementById('cart-items');
-      const total = document.getElementById('cart-total');
-      const count = document.getElementById('cart-count');
-      items.innerHTML = '';
-      let sum = 0, qty = 0;
-
-      cart.forEach((i, index) => {
-        sum += i.price * i.qty;
-        qty += i.qty;
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <img src="${i.image}" alt="">
-          <div class="cart-item-content">
-            ${i.name} x${i.qty} <br> ₹${i.price * i.qty}
-          </div>
-          <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
-          <a href="${i.link}" target="_blank"><button class="buy-btn">Buy</button></a>
-        `;
-        items.appendChild(li);
-      });
-
-      total.textContent = sum;
-      count.textContent = qty;
-    }
-
-    function toggleCart() {
-      document.getElementById('cart-drawer').classList.toggle('open');
-    }
-
-    document.getElementById('search-input').addEventListener('input', (e) => {
-      const keyword = e.target.value.toLowerCase();
-      const filtered = allProducts.filter(p => p.name.toLowerCase().includes(keyword));
-      renderProducts(filtered);
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(e.target.value.toLowerCase())
+      );
+      displayProducts(filtered);
     });
+  }
 
-    loadProducts();
-    updateCart();
-  </script>
+  function displayProducts(products) {
+    const container = document.getElementById('productContainer');
+    container.innerHTML = '';
+    if (products.length === 0) {
+      container.classList.add('empty');
+      return;
+    }
+    container.classList.remove('empty');
+
+    products.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+
+      // Badge
+      if (p.badge) {
+        const badge = document.createElement('div');
+        badge.className = 'badge';
+        badge.textContent = p.badge;
+        card.appendChild(badge);
+      }
+
+      // Urgency
+      if (p.urgency) {
+        const urgency = document.createElement('div');
+        urgency.className = 'badge urgency';
+        urgency.textContent = p.urgency;
+        card.appendChild(urgency);
+      }
+
+      card.innerHTML += `
+        <img src="${p.image}" alt="${p.name}" />
+        <div class="product-info">
+          <h3>${p.name}</h3>
+          ${p.highlight ? `<div class="highlight">${p.highlight}</div>` : ''}
+          <div class="product-price">₹${p.price}</div>
+          <div class="product-buttons">
+            <button class="cart-btn">Add to Cart</button>
+            <button class="view-btn" onclick="window.open('${p.link}', '_blank')">View on Store</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  loadProducts();
+</script>
+
 </body>
 </html>
