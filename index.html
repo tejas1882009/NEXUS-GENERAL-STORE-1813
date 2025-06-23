@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nexus Store</title>
   <style>
     body {
@@ -118,7 +118,6 @@
       color: #fff;
     }
 
-    /* Cart panel */
     #cartPanel {
       position: fixed;
       right: 0;
@@ -172,21 +171,6 @@
       background: #27ae60;
       color: white;
     }
-
-    /* Responsive for mobile */
-    @media(max-width: 768px) {
-  .product-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-
-
-    @media(min-width: 769px) and (max-width: 1024px) {
-      .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
   </style>
 </head>
 <body>
@@ -201,7 +185,6 @@
 
 <div id="productContainer" class="product-grid"></div>
 
-<!-- Cart Panel -->
 <div id="cartPanel">
   <h3>Your Cart</h3>
   <div id="cartItems"></div>
@@ -229,10 +212,8 @@
     products.forEach((p, index) => {
       const card = document.createElement('div');
       card.className = 'product-card';
-
       if (p.badge) card.innerHTML += `<div class="badge">${p.badge}</div>`;
       if (p.urgency) card.innerHTML += `<div class="badge urgency">${p.urgency}</div>`;
-
       card.innerHTML += `
         <img src="${p.image}" alt="${p.name}" />
         <div class="product-info">
@@ -247,7 +228,6 @@
       `;
       container.appendChild(card);
     });
-
     window.productData = products;
   }
 
