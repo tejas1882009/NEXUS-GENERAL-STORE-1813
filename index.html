@@ -6,29 +6,23 @@
   <title>Nexus Design Store</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      background: #f4f6fa;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
     }
     header {
-      background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
-      padding: 1rem 2rem;
-      color: #fff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
+      background: #111;
       color: #00e6e6;
-    }
-    #topNote {
+      padding: 1rem;
       text-align: center;
-      font-size: 1rem;
-      font-weight: bold;
+      font-size: 1.6rem;
+    }
+    .info-banner {
       background: #ffeaa7;
-      padding: 10px;
+      padding: 0.8rem;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.95rem;
       color: #2d3436;
     }
     .product-grid {
@@ -39,31 +33,19 @@
     }
     .product-card {
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
       overflow: hidden;
-      transition: transform 0.3s ease;
-      position: relative;
+      transition: transform 0.3s;
     }
     .product-card:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
     .product-card img {
       width: 100%;
-      height: 230px;
+      height: 240px;
       object-fit: contain;
-      background-color: #f1f1f1;
-    }
-    .badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: crimson;
-      color: white;
-      font-size: 0.75rem;
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-weight: bold;
+      background: #fafafa;
     }
     .product-info {
       padding: 1rem;
@@ -72,85 +54,58 @@
     .product-info h3 {
       margin: 0;
       font-size: 1.1rem;
-      color: #333;
+      color: #2c3e50;
     }
     .product-price {
+      margin: 0.5rem 0;
+      color: #000;
       font-weight: bold;
-      font-size: 1.1rem;
-      margin: 0.6rem 0;
-      color: #111;
-    }
-    .product-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-    }
-    .product-buttons button {
-      padding: 0.5rem 0.8rem;
-      font-size: 0.85rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      min-width: 100px;
+      font-size: 1rem;
     }
     .buy-btn {
-      background-color: #e84393;
+      background: #0984e3;
       color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
     }
-    .cart-btn {
-      background-color: #0984e3;
-      color: white;
+    .buy-btn:hover {
+      background: #0768c1;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Nexus Design Store</h1>
-  </header>
-
-  <div id="topNote">🛍️ To buy our cards click on buy and DM us on our Instagram page</div>
-
-  <div class="product-grid" id="designContainer"></div>
+  <header>Nexus Store</header>
+  <div class="info-banner">To buy our cards click on buy and DM us on our Instagram page</div>
+  <div class="product-grid" id="productContainer"></div>
 
   <script>
-    async function loadDesignProducts() {
+    async function loadProducts() {
       const res = await fetch('products.json');
       const products = await res.json();
-      const container = document.getElementById("designContainer");
+      const container = document.getElementById('productContainer');
       container.innerHTML = '';
 
-      products.forEach((product, index) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-
-        if (product.badge) {
-          card.innerHTML += `<div class="badge">${product.badge}</div>`;
-        }
-
-        card.innerHTML += `
+      products.forEach((product) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
           <img src="${product.image}" alt="${product.name}" />
           <div class="product-info">
             <h3>${product.name}</h3>
             <div class="product-price">₹${product.price}</div>
-            <div class="product-buttons">
-              <button class="cart-btn" onclick="addToCart(${index})">Add to Cart</button>
-              <button class="buy-btn" onclick="window.open('${product.link}', '_blank')">Buy</button>
-            </div>
+            <button class="buy-btn" onclick="window.open('https://www.instagram.com/nexusstore.mt', '_blank')">Buy</button>
           </div>
         `;
         container.appendChild(card);
       });
-
-      window.designProducts = products;
     }
 
-    function addToCart(index) {
-      const product = window.designProducts[index];
-      alert("Added to cart: " + product.name);
-    }
-
-    loadDesignProducts();
+    loadProducts();
   </script>
 
 </body>
