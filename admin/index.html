@@ -1,137 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Nexus Admin Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
+      background: #121212;
+      color: #f1f1f1;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      background: #0f0f0f;
-      color: white;
+      padding: 0;
+    }
+    h2 {
+      text-align: center;
     }
     .login-container, .dashboard {
       display: none;
+      max-width: 500px;
+      margin: 2rem auto;
+      background: #1e1e1e;
       padding: 2rem;
-      max-width: 600px;
-      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
     }
     .login-container.active, .dashboard.active {
       display: block;
     }
     input, button {
-      padding: 0.6rem;
-      margin: 0.5rem 0;
       width: 100%;
-      border-radius: 5px;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border-radius: 6px;
       border: none;
       font-size: 1rem;
     }
     button {
-      background: #00e6e6;
+      background: #00e676;
       font-weight: bold;
+      color: #000;
       cursor: pointer;
     }
     .product-row {
-      background: #1e1e1e;
+      background: #2a2a2a;
+      margin-top: 1rem;
       padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 8px;
+      border-radius: 6px;
     }
     .danger {
-      background: #e74c3c;
+      background: #e53935;
       color: white;
     }
-    h2 {
+    #loginError {
+      color: red;
       text-align: center;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
 
-<div class="login-container active" id="loginBox">
-  <h2>Admin Login</h2>
-  <input type="password" id="passwordInput" placeholder="Enter password" />
-  <button onclick="login()">Login</button>
-  <div id="loginError" style="color:red;text-align:center;"></div>
-</div>
+  <!-- Login Form -->
+  <div class="login-container active" id="loginBox">
+    <h2>Admin Login</h2>
+    <input type="password" id="passwordInput" placeholder="Enter password" />
+    <button onclick="login()">Login</button>
+    <div id="loginError"></div>
+  </div>
 
-<div class="dashboard" id="adminPanel">
-  <h2>Nexus Admin Dashboard</h2>
-  <input id="name" placeholder="Product Name" />
-  <input id="price" placeholder="Price" />
-  <input id="image" placeholder="Image URL" />
-  <input id="link" placeholder="Product Link" />
-  <button onclick="addProduct()">Add Product</button>
+  <!-- Admin Dashboard -->
+  <div class="dashboard" id="adminPanel">
+    <h2>Nexus Admin Dashboard</h2>
+    <input id="name" placeholder="Product Name" />
+    <input id="price" placeholder="Price" />
+    <input id="image" placeholder="Image URL" />
+    <input id="link" placeholder="Product Link" />
+    <button onclick="addProduct()">Add Product</button>
+    <div id="productList"></div>
+  </div>
 
-  <div id="productList"></div>
-</div>
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script>
+    const endpoint = "https://script.google.com/macros/s/AKfycbx6Zn5ahFrrxJzCFCPvg8NXcwZU2FUiqT6EU-OySN2YarmJuOTBVNrF5-AvEbLeuyfr/exec";
+    const correctHash = "2a8274aa96180c53784895c6a36168f5"; // MD5 of nexusadmin.mt1813
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
-<script>
-  const endpoint = "https://script.google.com/macros/s/AKfycbx6Zn5ahFrrxJzCFCPvg8NXcwZU2FUiqT6EU-OySN2YarmJuOTBVNrF5-AvEbLeuyfr/exec";
-  const correctHash = "9059f9496e7f8f448b60e0da39cc23cc"; // MD5 of nexus.mt1813
-
-
-  function login() {
-    const input = document.getElementById("passwordInput").value;
-    const hash = CryptoJS.MD5(input).toString();
-    if (hash === correctHash) {
-      document.getElementById("loginBox").classList.remove("active");
-      document.getElementById("adminPanel").classList.add("active");
-      loadProducts();
-    } else {
-      document.getElementById("loginError").textContent = "Incorrect password";
+    function login() {
+      const input = document.getElementById("passwordInput").value;
+      const hash = CryptoJS.MD5(input).toString();
+      if (hash === correctHash) {
+        document.getElementById("loginBox").classList.remove("active");
+        document.getElementById("adminPanel").classList.add("active");
+        loadProducts();
+      } else {
+        document.getElementById("loginError").textContent = "Incorrect password";
+      }
     }
-  }
 
-  async function loadProducts() {
-    const res = await fetch(endpoint);
-    const data = await res.json();
-    const list = document.getElementById("productList");
-    list.innerHTML = "";
-    data.forEach((item, index) => {
-      const row = document.createElement("div");
-      row.className = "product-row";
-      row.innerHTML = `
-        <strong>${item.name}</strong><br>
-        ₹${item.price}<br>
-        <img src="${item.image}" style="width:80px;height:80px;object-fit:cover;margin:5px 0;"><br>
-        <button class="danger" onclick="deleteProduct(${index})">Delete</button>
-      `;
-      list.appendChild(row);
-    });
-  }
-
-  async function addProduct() {
-    const name = document.getElementById("name").value;
-    const price = document.getElementById("price").value;
-    const image = document.getElementById("image").value;
-    const link = document.getElementById("link").value;
-    if (!name || !price || !image || !link) {
-      alert("Fill all fields");
-      return;
+    async function loadProducts() {
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      const list = document.getElementById("productList");
+      list.innerHTML = "";
+      data.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "product-row";
+        row.innerHTML = `
+          <strong>${item.name}</strong><br>
+          Price: ${item.price}<br>
+          <a href="${item.link}" target="_blank">View Link</a><br>
+          <img src="${item.image}" width="100" style="margin-top:10px;"><br>
+        `;
+        list.appendChild(row);
+      });
     }
-    await fetch(endpoint, {
-      method: "POST",
-      body: JSON.stringify({ name, price, image, link }),
-      headers: { "Content-Type": "application/json" }
-    });
-    loadProducts();
-    document.getElementById("name").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("image").value = "";
-    document.getElementById("link").value = "";
-  }
 
-  async function deleteProduct(index) {
-    if (confirm("Delete this product?")) {
-      await fetch(endpoint + "?index=" + index, { method: "DELETE" });
-      loadProducts();
+    function addProduct() {
+      const name = document.getElementById("name").value;
+      const price = document.getElementById("price").value;
+      const image = document.getElementById("image").value;
+      const link = document.getElementById("link").value;
+
+      if (!name || !price || !image || !link) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      const form = new FormData();
+      form.append("name", name);
+      form.append("price", price);
+      form.append("image", image);
+      form.append("link", link);
+
+      fetch(endpoint, {
+        method: "POST",
+        body: form
+      }).then(() => {
+        alert("Product added!");
+        document.getElementById("name").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("link").value = "";
+        loadProducts();
+      });
     }
-  }
-</script>
+  </script>
 </body>
 </html>
