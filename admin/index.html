@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nexus Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #0f0f0f;
+      color: white;
+    }
+    .login-container, .dashboard {
+      display: none;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    .login-container.active, .dashboard.active {
+      display: block;
+    }
+    input, button {
+      padding: 0.6rem;
+      margin: 0.5rem 0;
+      width: 100%;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background: #00e6e6;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .product-row {
+      background: #1e1e1e;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+    .danger {
+      background: #e74c3c;
+      color: white;
+    }
+    h2 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container active" id="loginBox">
+  <h2>Admin Login</h2>
+  <input type="password" id="passwordInput" placeholder="Enter password" />
+  <button onclick="login()">Login</button>
+  <div id="loginError" style="color:red;text-align:center;"></div>
+</div>
+
+<div class="dashboard" id="adminPanel">
+  <h2>Nexus Admin Dashboard</h2>
+  <input id="name" placeholder="Product Name" />
+  <input id="price" placeholder="Price" />
+  <input id="image" placeholder="Image URL" />
+  <input id="link" placeholder="Product Link" />
+  <button onclick="addProduct()">Add Product</button>
+
+  <div id="productList"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+  const endpoint = "https://script.google.com/macros/s/AKfycbx6Zn5ahFrrxJzCFCPvg8NXcwZU2FUiqT6EU-OySN2YarmJuOTBVNrF5-AvEbLeuyfr/exec";
+  const correctHash = "8b21fc2e9f116b20efdeecfc3ff32bc6"; // MD5 of nexusadmin123
+
+  function login() {
+    const input = document.getElementById("passwordInput").value;
+    const hash = CryptoJS.MD5(input).toString();
+    if (hash === correctHash) {
+      document.getElementById("loginBox").classList.remove("active");
+      document.getElementById("adminPanel").classList.add("active");
+      loadProducts();
+    } else {
+      document.getElementById("loginError").textContent = "Incorrect password";
+    }
+  }
+
+  async function loadProducts() {
+    const res = await fetch(endpoint);
+    const data = await res.json();
+    const list = document.getElementById("productList");
+    list.innerHTML = "";
+    data.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "product-row";
+      row.innerHTML = `
+        <strong>${item.name}</strong><br>
+        ₹${item.price}<br>
+        <img src="${item.image}" style="width:80px;height:80px;object-fit:cover;margin:5px 0;"><br>
+        <button class="danger" onclick="deleteProduct(${index})">Delete</button>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  async function addProduct() {
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+    const image = document.getElementById("image").value;
+    const link = document.getElementById("link").value;
+    if (!name || !price || !image || !link) {
+      alert("Fill all fields");
+      return;
+    }
+    await fetch(endpoint, {
+      method: "POST",
+      body: JSON.stringify({ name, price, image, link }),
+      headers: { "Content-Type": "application/json" }
+    });
+    loadProducts();
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("image").value = "";
+    document.getElementById("link").value = "";
+  }
+
+  async function deleteProduct(index) {
+    if (confirm("Delete this product?")) {
+      await fetch(endpoint + "?index=" + index, { method: "DELETE" });
+      loadProducts();
+    }
+  }
+</script>
+</body>
+</html>
