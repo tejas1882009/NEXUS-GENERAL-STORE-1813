@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexus Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nexus Design Store</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -17,56 +17,43 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
     header h1 {
       margin: 0;
       font-size: 1.8rem;
       color: #00e6e6;
     }
-    #searchInput {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 20px;
-      width: 200px;
+    #topNote {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: bold;
+      background: #ffeaa7;
+      padding: 10px;
+      color: #2d3436;
     }
-    #cartIcon {
-      font-size: 1.3rem;
-      cursor: pointer;
-      margin-left: 10px;
-    }
-
     .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
-}
-
-
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
     .product-card {
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       overflow: hidden;
-      position: relative;
       transition: transform 0.3s ease;
+      position: relative;
     }
     .product-card:hover {
       transform: scale(1.02);
     }
-
-    /* ✅ Image fix: object-fit cover + no padding */
     .product-card img {
       width: 100%;
-      height: 250px;
-      object-fit: cover;
-      display: block;
-      background-color: #fafafa;
+      height: 230px;
+      object-fit: contain;
+      background-color: #f1f1f1;
     }
-
     .badge {
       position: absolute;
       top: 10px;
@@ -78,201 +65,93 @@
       border-radius: 12px;
       font-weight: bold;
     }
-    .urgency {
-      background: orange;
-      left: auto;
-      right: 10px;
-    }
     .product-info {
       padding: 1rem;
+      text-align: center;
     }
     .product-info h3 {
       margin: 0;
       font-size: 1.1rem;
       color: #333;
     }
-    .highlight {
-      font-size: 0.85rem;
-      color: #777;
-      margin-top: 4px;
-    }
     .product-price {
       font-weight: bold;
       font-size: 1.1rem;
-      margin: 0.8rem 0;
+      margin: 0.6rem 0;
       color: #111;
     }
     .product-buttons {
       display: flex;
       gap: 10px;
+      justify-content: center;
     }
     .product-buttons button {
-      flex: 1;
-      padding: 0.5rem;
-      font-size: 0.9rem;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.85rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      min-width: 100px;
     }
-    .view-btn {
-      background-color: #00b894;
-      color: #fff;
+    .buy-btn {
+      background-color: #e84393;
+      color: white;
     }
     .cart-btn {
       background-color: #0984e3;
-      color: #fff;
-    }
-
-    #cartPanel {
-      position: fixed;
-      right: 0;
-      top: 0;
-      width: 300px;
-      height: 100%;
-      background: #fff;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      padding: 1rem;
-      z-index: 1000;
-    }
-    #cartPanel.show {
-      transform: translateX(0%);
-    }
-    .cart-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .cart-item img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-right: 10px;
-    }
-    .cart-item-info {
-      flex: 1;
-    }
-    .cart-item-info p {
-      margin: 4px 0;
-    }
-    .cart-actions {
-      display: flex;
-      gap: 6px;
-    }
-    .cart-actions button {
-      flex: 1;
-      padding: 6px;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .remove-btn {
-      background: #ccc;
-    }
-    .buy-btn {
-      background: #27ae60;
       color: white;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Nexus Store</h1>
-  <div>
-    <input type="text" id="searchInput" placeholder="Search..." />
-    <span id="cartIcon">🛒</span>
-  </div>
-</header>
+  <header>
+    <h1>Nexus Design Store</h1>
+  </header>
 
-<div id="productContainer" class="product-grid"></div>
+  <div id="topNote">🛍️ To buy our cards click on buy and DM us on our Instagram page</div>
 
-<div id="cartPanel">
-  <h3>Your Cart</h3>
-  <div id="cartItems"></div>
-</div>
+  <div class="product-grid" id="designContainer"></div>
 
-<script>
-  let cart = [];
+  <script>
+    async function loadDesignProducts() {
+      const res = await fetch('products.json');
+      const products = await res.json();
+      const container = document.getElementById("designContainer");
+      container.innerHTML = '';
 
-  async function loadProducts() {
-    const res = await fetch('products.json');
-    const products = await res.json();
-    displayProducts(products);
+      products.forEach((product, index) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      const filtered = products.filter(product =>
-        product.name.toLowerCase().includes(e.target.value.toLowerCase())
-      );
-      displayProducts(filtered);
-    });
-  }
+        if (product.badge) {
+          card.innerHTML += `<div class="badge">${product.badge}</div>`;
+        }
 
-  function displayProducts(products) {
-    const container = document.getElementById('productContainer');
-    container.innerHTML = '';
-    products.forEach((p, index) => {
-      const card = document.createElement('div');
-      card.className = 'product-card';
-      if (p.badge) card.innerHTML += `<div class="badge">${p.badge}</div>`;
-      if (p.urgency) card.innerHTML += `<div class="badge urgency">${p.urgency}</div>`;
-      card.innerHTML += `
-        <img src="${p.image}" alt="${p.name}" />
-        <div class="product-info">
-          <h3>${p.name}</h3>
-          ${p.highlight ? `<div class="highlight">${p.highlight}</div>` : ''}
-          <div class="product-price">₹${p.price}</div>
-          <div class="product-buttons">
-            <button class="cart-btn" onclick="addToCart(${index})">Add to Cart</button>
-            <button class="view-btn" onclick="window.open('${p.link}', '_blank')">View on Store</button>
-          </div>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-    window.productData = products;
-  }
-
-  function addToCart(index) {
-    const product = window.productData[index];
-    cart.push(product);
-    updateCart();
-  }
-
-  function removeFromCart(i) {
-    cart.splice(i, 1);
-    updateCart();
-  }
-
-  function updateCart() {
-    const cartItems = document.getElementById('cartItems');
-    cartItems.innerHTML = '';
-    cart.forEach((item, i) => {
-      cartItems.innerHTML += `
-        <div class="cart-item">
-          <img src="${item.image}" />
-          <div class="cart-item-info">
-            <p><strong>${item.name}</strong></p>
-            <p>₹${item.price}</p>
-            <div class="cart-actions">
-              <button class="remove-btn" onclick="removeFromCart(${i})">Remove</button>
-              <button class="buy-btn" onclick="window.open('${item.link}', '_blank')">Buy Now</button>
+        card.innerHTML += `
+          <img src="${product.image}" alt="${product.name}" />
+          <div class="product-info">
+            <h3>${product.name}</h3>
+            <div class="product-price">₹${product.price}</div>
+            <div class="product-buttons">
+              <button class="cart-btn" onclick="addToCart(${index})">Add to Cart</button>
+              <button class="buy-btn" onclick="window.open('${product.link}', '_blank')">Buy</button>
             </div>
           </div>
-        </div>
-      `;
-    });
-  }
+        `;
+        container.appendChild(card);
+      });
 
-  document.getElementById('cartIcon').addEventListener('click', () => {
-    document.getElementById('cartPanel').classList.toggle('show');
-  });
+      window.designProducts = products;
+    }
 
-  loadProducts();
-</script>
+    function addToCart(index) {
+      const product = window.designProducts[index];
+      alert("Added to cart: " + product.name);
+    }
+
+    loadDesignProducts();
+  </script>
 
 </body>
 </html>
