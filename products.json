@@ -1,8 +1,17 @@
 [
     {
-        "name": "Basic elegant logo for brand",
+        "name": "#L1",
         "price": 49,
         "image": "https://i.ibb.co/pr5jYjcs/NEXUS-STORE-20250625-131441-0000.png[/img][/url]",
+        "link": "https://www.instagram.com/nexusstore.mt?igsh=OWttcXR3aTJybjI3"
+    }
+],
+
+[
+    {
+        "name": "#L2",
+        "price": 49,
+        "image": "https://i.ibb.co/Ngy6zc14/N-20250625-152047-0000.png",
         "link": "https://www.instagram.com/nexusstore.mt?igsh=OWttcXR3aTJybjI3"
     }
 ]
