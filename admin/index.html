@@ -8,21 +8,22 @@
       background: #121212;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      padding: 40px;
+      margin: 0;
+      padding: 0;
+    }
+    .login, .panel {
+      max-width: 500px;
+      margin: 80px auto;
+      background: #1f1f1f;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,229,255,0.2);
     }
     h1 {
       text-align: center;
       color: #00e5ff;
     }
-    form {
-      max-width: 500px;
-      margin: 0 auto;
-      background: #1f1f1f;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
-    }
-    input, select {
+    input, select, button {
       width: 100%;
       padding: 12px;
       margin: 10px 0 20px;
@@ -30,15 +31,11 @@
       border-radius: 5px;
       background: #333;
       color: #fff;
+      font-size: 16px;
     }
     button {
-      width: 100%;
-      padding: 12px;
       background: #00e5ff;
       color: #000;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
       cursor: pointer;
     }
     button:hover {
@@ -46,13 +43,23 @@
     }
     .note {
       text-align: center;
-      font-size: 13px;
       color: #888;
-      margin-top: 20px;
+      font-size: 13px;
+      margin-top: 10px;
     }
+    #panelSection { display: none; }
   </style>
 </head>
 <body>
+
+<div class="login" id="loginSection">
+  <h1>🔐 Enter Admin Password</h1>
+  <input type="password" id="adminPassword" placeholder="Enter Password">
+  <button onclick="checkPassword()">Login</button>
+  <p class="note">Only authorized admins can access this panel</p>
+</div>
+
+<div class="panel" id="panelSection">
   <h1>🛠 Nexus Store Admin Panel</h1>
   <form id="uploadForm">
     <input type="text" id="name" placeholder="Product Name" required>
@@ -68,39 +75,48 @@
     <button type="submit">Upload Product</button>
   </form>
   <p class="note">Connected to your live Google Sheet using Apps Script ✅</p>
+</div>
 
-  <script>
-    const form = document.getElementById('uploadForm');
+<script>
+  const correctPassword = "nexusadmin.mt18132009";
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  function checkPassword() {
+    const input = document.getElementById("adminPassword").value;
+    if (input === correctPassword) {
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("panelSection").style.display = "block";
+    } else {
+      alert("❌ Incorrect password");
+    }
+  }
 
-      const product = {
-        name: document.getElementById('name').value,
-        price: document.getElementById('price').value,
-        image: document.getElementById('image').value,
-        link: document.getElementById('link').value,
-        badge: document.getElementById('badge').value,
-      };
+  const form = document.getElementById("uploadForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const product = {
+      name: document.getElementById("name").value,
+      price: document.getElementById("price").value,
+      image: document.getElementById("image").value,
+      link: document.getElementById("link").value,
+      badge: document.getElementById("badge").value,
+    };
 
-      try {
-        const response = await fetch(https://script.google.com/macros/s/AKfycbw6TT_WotCz47TBt2WpK27i2LFBVYSFFA4-fL0tUU0W_oUIKly5T1wEjR5Ghm5i-uf0aQ/exec', {
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbw6TT_WotCz47TBt2WpK27i2LFBVYSFFA4-fL0tUU0W_oUIKly5T1wEjR5Ghm5i-uf0aQ/exec", {
+        method: "POST",
+        body: JSON.stringify(product),
+        headers: { "Content-Type": "application/json" }
+      });
 
-          method: 'POST',
-          body: JSON.stringify(product),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+      const result = await response.json();
+      alert(result.status === "success" ? "✅ Product uploaded!" : "❌ Upload failed!");
+      form.reset();
+    } catch (err) {
+      alert("❌ Network or Script Error");
+      console.error(err);
+    }
+  });
+</script>
 
-        const result = await response.json();
-        alert(result.status === "success" ? "✅ Product uploaded!" : "❌ Upload failed!");
-        form.reset();
-      } catch (error) {
-        alert("❌ Network or Script Error");
-        console.error(error);
-      }
-    });
-  </script>
 </body>
 </html>
