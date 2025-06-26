@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Nexus Store Admin Panel</title>
   <style>
     body {
@@ -103,18 +103,16 @@
 
     try {
       const response = await fetch("https://script.google.com/macros/s/AKfycbwpI_2NrdKn2eVm8MGew3Ik-jX20qAbDVEh2aupirg7RqGj6Qo_EWbw7TneMqv5Xix9Zg/exec", {
-
         method: "POST",
         body: JSON.stringify(product),
         headers: { "Content-Type": "application/json" }
       });
 
       const result = await response.json();
-      alert(result.status === "success" ? "✅ Product uploaded!" : "❌ Upload failed!");
+      alert(result.status === "success" ? "✅ Product uploaded!" : "❌ Upload failed: " + result.message);
       form.reset();
     } catch (err) {
-      alert("❌ Network or Script Error");
-      console.error(err);
+      alert("❌ Network or Script Error:\n" + err.message);
     }
   });
 </script>
